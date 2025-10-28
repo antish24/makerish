@@ -42,12 +42,10 @@ export function PlayerBar({
   const [duration, setDuration] = useState(0);
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // keep onNext always up to date
   useEffect(() => {
     onNextRef.current = onNext;
   }, [onNext]);
 
-  // Format time helper
   const formatTime = useCallback((seconds: number): string => {
     if (isNaN(seconds)) return '0:00';
     const mins = Math.floor(seconds / 60);
@@ -85,7 +83,6 @@ export function PlayerBar({
         },
         events: {
           onReady: (event: any) => {
-            console.log('YouTube player ready');
             setIsPlayerReady(true);
             onPlayerReady(event.target);
           },
@@ -117,7 +114,6 @@ export function PlayerBar({
   // Load new song when currentSong changes
   useEffect(() => {
     if (isPlayerReady && currentSong?.id && playerRef.current) {
-      console.log('Loading new song:', currentSong.title);
       setIsPlayerLoading(true);
       playerRef.current.loadVideoById(currentSong.id);
       setCurrentTime(0);
@@ -141,7 +137,6 @@ export function PlayerBar({
     }
   }, [isPlaying, isPlayerReady]);
 
-  // Track progress
   const startProgressTracking = () => {
     stopProgressTracking();
     progressIntervalRef.current = setInterval(() => {
@@ -161,7 +156,6 @@ export function PlayerBar({
     }
   };
 
-  // Seek when clicking on progress bar
   const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!duration || !isPlayerReady) return;
     const bar = e.currentTarget;
@@ -175,7 +169,6 @@ export function PlayerBar({
     }
   };
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       stopProgressTracking();
@@ -195,7 +188,6 @@ export function PlayerBar({
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-[hsl(var(--player-bg))] border-t border-border backdrop-blur-lg z-50 animate-slide-up">
-      {/* Progress bar */}
       <div
         className="w-full h-1 bg-muted/50 cursor-pointer group"
         onClick={handleProgressClick}
@@ -208,7 +200,6 @@ export function PlayerBar({
 
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between gap-4">
-          {/* Song info */}
           <div className="flex items-center gap-3 flex-1 min-w-0">
             <img
               src={currentSong.thumbnail}
@@ -223,7 +214,6 @@ export function PlayerBar({
                 {currentSong.artist}
               </p>
             </div>
-            {/* Time */}
             <div className="flex items-center gap-2 text-xs text-muted-foreground flex-shrink-0">
               <span>{formatTime(currentTime)}</span>
               <span>/</span>
@@ -231,7 +221,6 @@ export function PlayerBar({
             </div>
           </div>
 
-          {/* Controls */}
           <div className="flex items-center gap-2 flex-shrink-0">
             <Button
               variant="ghost"
@@ -274,7 +263,6 @@ export function PlayerBar({
         </div>
       </div>
 
-      {/* Hidden YT player */}
       <div id="youtube-player" className="hidden" />
     </div>
   );
