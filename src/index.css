@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Spotify-inspired dark theme */
+    --background: 0 0% 7.1%; /* #121212 */
+    --foreground: 0 0% 100%; /* white text */
+
+    --card: 0 0% 9.4%; /* #181818 */
+    --card-foreground: 0 0% 100%;
+
+    --popover: 0 0% 9.4%;
+    --popover-foreground: 0 0% 100%;
+
+    /* Spotify green accent */
+    --primary: 141 73% 42%; /* #1DB954 */
+    --primary-foreground: 0 0% 0%;
+
+    --secondary: 0 0% 15.7%; /* #282828 */
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 0 0% 20%;
+    --muted-foreground: 0 0% 63.9%;
+
+    --accent: 141 73% 42%;
+    --accent-foreground: 0 0% 0%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 20%;
+    --input: 0 0% 15.7%;
+    --ring: 141 73% 42%;
+
+    --radius: 0.5rem;
+
+    /* Player bar */
+    --player-bg: 0 0% 11.4%; /* #1D1D1D */
+    
+    /* Glassmorphism */
+    --glass-bg: 0 0% 15% / 0.7;
+    --glass-border: 0 0% 100% / 0.1;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    overflow-x: hidden;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 12px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted));
+    border-radius: 6px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary));
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
