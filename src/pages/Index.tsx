@@ -140,7 +140,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background pb-24">
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-lg border-b border-border">
-        <div className="px-4 py-4 flex items-center justify-between gap-2">
+        <div className="px-4 py-2 flex items-center justify-between gap-2">
           <div className="flex flex-col">
             <h1 className="text-2xl font-bold text-foreground leading-tight">
               <span className="bg-gradient-to-r from-primary/50 to-primary/90 bg-clip-text text-transparent">
@@ -158,7 +158,7 @@ const Index = () => {
 
       <main className="container mx-auto p-4">
         {isLoading ? (
-          <div className="flex items-center justify-center py-20 text-center">
+          <div className="py-20 text-center">
             <div className="animate-pulse-glow rounded-full h-16 w-16 bg-green-500/30 mx-auto mb-4" />
             <p className="text-muted-foreground">Searching...</p>
           </div>
