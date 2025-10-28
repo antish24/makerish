@@ -30,23 +30,17 @@ export default function InstallButton() {
   return (
     <motion.div
       onClick={handleInstall}
-      style={{
-        position: "fixed",
-        bottom: 25,
-        right: 15,
-        zIndex: 1000,
-        cursor: "pointer",
-        borderRadius: "50%",
-        background: "#1DB95460",
-        padding: 16,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        boxShadow: "0 1px 2px rgba(255,255,255,.9)",
-      }}
+      className="
+        fixed bottom-6 right-4 z-50
+        flex items-center justify-center
+        w-14 h-14 rounded-full
+        bg-gradient-to-r from-primary/70 to-primary/60
+        shadow-lg
+        cursor-pointer
+        hover:scale-110 hover:shadow-2xl
+      "
       animate={{ y: [0, -8, 0] }} // subtle floating
       transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-      whileHover={{ scale: 1.15, boxShadow: "0 10px 20px rgba(0,0,0,0.25)" }}
     >
       <DownloadCloud size={28} color="white" />
     </motion.div>
