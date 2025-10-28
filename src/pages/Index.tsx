@@ -174,7 +174,7 @@ const Index = () => {
                   Madify
                 </span>
               </h1>
-              <p className="text-xs text-muted-foreground -mt-1 font-medium">Music Player</p>
+              <p className="text-xs text-[#1DB954] -mt-1 font-medium">Music Player</p>
             </div>
 
             {/* Search Bar */}
