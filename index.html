@@ -7,19 +7,19 @@
     <meta name="description" content="Stream music from YouTube with Madify - Your personal music streaming companion" />
     <meta name="author" content="Madify" />
     <meta name="theme-color" content="#1DB954" />
-    
+
     <!-- PWA Meta Tags -->
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Madify" />
 
+    <!-- Open Graph -->
     <meta property="og:title" content="Madify - Stream Your Music" />
     <meta property="og:description" content="Stream music from YouTube with Madify" />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
 
-    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Madify - Stream Your Music" />
     <meta name="twitter:description" content="Your personal music streaming companion" />
   </head>
@@ -27,5 +27,16 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+
+    <!-- Optional: Show prompt for installing PWA -->
+    <script>
+      let deferredPrompt;
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        // Optionally, you can show a button here to trigger deferredPrompt.prompt()
+        console.log("PWA install prompt is ready!");
+      });
+    </script>
   </body>
 </html>

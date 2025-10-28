@@ -17,9 +17,9 @@ export default defineConfig(({ mode }) => ({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
       manifest: {
-        name: 'MyVibe - Music Streaming',
-        short_name: 'MyVibe',
-        description: 'Stream music powered by YouTube',
+        name: 'Madify - Music Streaming',
+        short_name: 'Madify',
+        description: 'Stream music powered by ish',
         theme_color: '#1DB954',
         background_color: '#121212',
         display: 'standalone',

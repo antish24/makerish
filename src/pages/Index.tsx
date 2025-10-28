@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Music2, Loader2 } from 'lucide-react';
+import { Music2, Loader2, Music4Icon } from 'lucide-react';
 import { SearchBar } from '@/components/SearchBar';
 import { SongCard } from '@/components/SongCard';
 import { PlayerBar } from '@/components/PlayerBar';
@@ -190,7 +190,7 @@ const Index = () => {
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <div className="text-center">
-              <div className="animate-pulse-glow rounded-full h-16 w-16 bg-red-500/20 mx-auto mb-4" />
+              <div className="animate-pulse-glow rounded-full h-16 w-16 bg-green-500/30 mx-auto mb-4" />
               <p className="text-muted-foreground">Searching...</p>
             </div>
           </div>
@@ -230,12 +230,15 @@ const Index = () => {
           </>
         ) : (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <Music2 className="h-24 w-24 text-muted-foreground/20 mb-6" />
+            <Music4Icon className="h-24 w-24 text-muted-foreground/20 mb-6" />
             <h2 className="text-2xl font-semibold text-foreground mb-2">
               Start Your Vibe
             </h2>
-            <p className="text-muted-foreground max-w-md">
-              Search for your favorite songs, artists, or albums to begin your musical journey
+            <p className="text-muted-foreground">
+              Search for your favorite songs or artists
+            </p>
+            <p className="text-muted-foreground">
+             to begin your musical journey
             </p>
           </div>
         )}
