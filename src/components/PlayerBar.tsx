@@ -14,7 +14,6 @@ interface PlayerBarProps {
   onPlayerReady: (player: any) => void;
   playlist: Song[];
   currentIndex: number;
-  onLoadingChange?: (loading: boolean) => void; // optional callback
 }
 
 declare global {
@@ -33,13 +32,12 @@ export function PlayerBar({
   onPlayerReady,
   playlist,
   currentIndex,
-  onLoadingChange,
 }: PlayerBarProps) {
   const playerRef = useRef<any>(null);
   const onNextRef = useRef(onNext);
   const [isAPIReady, setIsAPIReady] = useState(false);
   const [isPlayerReady, setIsPlayerReady] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isPlayerLoading, setIsPlayerLoading] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -94,19 +92,14 @@ export function PlayerBar({
           onStateChange: (event: any) => {
             switch (event.data) {
               case window.YT.PlayerState.PLAYING:
-                setIsLoading(false);
-                onLoadingChange?.(false);
                 startProgressTracking();
-                break;
-              case window.YT.PlayerState.BUFFERING:
-                setIsLoading(true);
-                onLoadingChange?.(true);
+                setIsPlayerLoading(false);
                 break;
               case window.YT.PlayerState.PAUSED:
+              case window.YT.PlayerState.BUFFERING:
                 stopProgressTracking();
                 break;
               case window.YT.PlayerState.ENDED:
-                console.log('Song ended → play next');
                 stopProgressTracking();
                 setTimeout(() => onNextRef.current(), 500);
                 break;
@@ -114,36 +107,23 @@ export function PlayerBar({
           },
           onError: (err: any) => {
             console.error('YouTube Player Error:', err);
-            setIsLoading(false);
-            onLoadingChange?.(false);
+            setIsPlayerLoading(false);
           },
         },
       });
     }
-  }, [isAPIReady, onPlayerReady, onLoadingChange]);
+  }, [isAPIReady, onPlayerReady]);
 
   // Load new song when currentSong changes
   useEffect(() => {
     if (isPlayerReady && currentSong?.id && playerRef.current) {
       console.log('Loading new song:', currentSong.title);
-      setIsLoading(true);
-      onLoadingChange?.(true);
-
+      setIsPlayerLoading(true);
       playerRef.current.loadVideoById(currentSong.id);
       setCurrentTime(0);
       setDuration(currentSong.durationSeconds || 0);
-
-      if (isPlaying) {
-        setTimeout(() => {
-          try {
-            playerRef.current.playVideo();
-          } catch (err) {
-            console.error('Play error:', err);
-          }
-        }, 300);
-      }
     }
-  }, [currentSong?.id, isPlayerReady, isPlaying, onLoadingChange]);
+  }, [currentSong?.id, isPlayerReady]);
 
   // Sync play/pause with state
   useEffect(() => {
@@ -226,14 +206,7 @@ export function PlayerBar({
         />
       </div>
 
-      <div className="container mx-auto px-4 py-3 relative">
-        {/* Loading overlay */}
-        {isLoading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/20 z-50">
-            <Loader2 className="h-6 w-6 animate-spin text-white" />
-          </div>
-        )}
-
+      <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between gap-4">
           {/* Song info */}
           <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -265,7 +238,7 @@ export function PlayerBar({
               size="icon"
               onClick={onPrevious}
               className="text-foreground hover:text-primary"
-              disabled={playlist.length <= 1}
+              disabled={playlist.length <= 1 || isPlayerLoading}
             >
               <SkipBack className="h-5 w-5" />
             </Button>
@@ -274,10 +247,12 @@ export function PlayerBar({
               variant="default"
               size="icon"
               onClick={onPlayPause}
-              className="h-10 w-10 rounded-full bg-primary hover:bg-primary/90 text-black"
-              disabled={!isPlayerReady}
+              className="h-10 w-10 rounded-full bg-primary hover:bg-primary/90 text-black flex items-center justify-center"
+              disabled={!isPlayerReady || isPlayerLoading}
             >
-              {isPlaying ? (
+              {isPlayerLoading ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : isPlaying ? (
                 <Pause className="h-5 w-5 fill-black" />
               ) : (
                 <Play className="h-5 w-5 fill-black ml-0.5" />
@@ -289,7 +264,7 @@ export function PlayerBar({
               size="icon"
               onClick={onNext}
               className="text-foreground hover:text-primary"
-              disabled={playlist.length <= 1}
+              disabled={playlist.length <= 1 || isPlayerLoading}
             >
               <SkipForward className="h-5 w-5" />
             </Button>
