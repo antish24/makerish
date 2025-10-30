@@ -1,24 +1,32 @@
-import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { HomeIcon } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
-const NotFound = () => {
-  const location = useLocation();
-
-  useEffect(() => {
-    console.error("404 Error: User attempted to access non-existent route:", location.pathname);
-  }, [location.pathname]);
+const NotFoundPage = () => {
+  const navigate = useNavigate();
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">404</h1>
-        <p className="mb-4 text-xl text-gray-600">Oops! Page not found</p>
-        <a href="/" className="text-blue-500 underline hover:text-blue-700">
-          Return to Home
-        </a>
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div className="text-center max-w-md w-full">
+        {/* 404 Content */}
+        <div className="mb-12">
+          <h1 className="text-9xl font-bold text-primary mb-4">404</h1>
+          <h2 className="text-2xl font-semibold text-foreground mb-4">Page Not Found</h2>
+          <p className="text-muted-foreground mb-8">
+            The page you're looking for doesn't exist. You might have followed a broken link or entered an incorrect URL.
+          </p>
+        </div>
+
+        {/* Home Button */}
+        <button
+          onClick={() => navigate('/')}
+          className="flex items-center gap-2 mx-auto text-muted-foreground hover:text-foreground transition-colors px-4 py-2 border border-border rounded-md hover:bg-accent"
+        >
+          <HomeIcon className="h-4 w-4" />
+          Back to Home
+        </button>
       </div>
     </div>
   );
 };
 
-export default NotFound;
+export default NotFoundPage;

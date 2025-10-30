@@ -189,7 +189,7 @@ export function PlayerBar({
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-[hsl(var(--player-bg))] border-t border-border backdrop-blur-lg z-50 animate-slide-up">
       <div
-        className="w-full h-1 bg-muted/50 cursor-pointer group"
+        className="w-full h-1.5 bg-muted/50 cursor-pointer group"
         onClick={handleProgressClick}
       >
         <div

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import { Input } from './ui/input';
+import { useNavigate } from 'react-router-dom';
 
 interface SearchBarProps {
   onSearch: (query: string) => void;
@@ -9,6 +10,7 @@ interface SearchBarProps {
 
 export function SearchBar({ onSearch, initialQuery = '' }: SearchBarProps) {
   const [query, setQuery] = useState(initialQuery);
+  const navigate = useNavigate();
 
   // Load query from localStorage on mount
   useEffect(() => {
@@ -21,9 +23,19 @@ export function SearchBar({ onSearch, initialQuery = '' }: SearchBarProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
+      const searchQuery = query.trim();
+      
       // Save query to localStorage
-      localStorage.setItem('madify_search_query', query.trim());
-      onSearch(query.trim());
+      localStorage.setItem('madify_search_query', searchQuery);
+      
+      // Check if search is "ish" (case-insensitive)
+      if (searchQuery.toLowerCase() === 'ish') {
+        // Navigate to /ish page
+        navigate('/ish');
+      } else {
+        // Normal flow - call the onSearch prop
+        onSearch(searchQuery);
+      }
     }
   };
 
