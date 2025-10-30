@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef } from 'react';
-import { Music4Icon, Loader2 } from 'lucide-react';
-import { SearchBar } from '@/components/SearchBar';
-import { SongCard } from '@/components/SongCard';
-import { PlayerBar } from '@/components/PlayerBar';
-import { searchYouTube, Song, SearchResponse } from '@/lib/youtube';
-import { useToast } from '@/hooks/use-toast';
-import { Button } from '@/components/ui/button';
+import { useState, useEffect, useRef } from "react";
+import { Music4Icon, Loader2 } from "lucide-react";
+import { SearchBar } from "@/components/SearchBar";
+import { SongCard } from "@/components/SongCard";
+import { PlayerBar } from "@/components/PlayerBar";
+import { searchYouTube, Song, SearchResponse } from "@/lib/youtube";
+import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
   const [songs, setSongs] = useState<Song[]>([]);
@@ -18,14 +18,16 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [nextPageToken, setNextPageToken] = useState<string | undefined>();
-  const [currentQuery, setCurrentQuery] = useState('');
+  const [currentQuery, setCurrentQuery] = useState("");
+  const [isLooping, setIsLooping] = useState(false);
+  const handleToggleLoop = () => setIsLooping((prev) => !prev);
 
   const playerRef = useRef<any>(null);
   const { toast } = useToast();
 
   useEffect(() => {
-    const recentSongs = localStorage.getItem('madify_recent');
-    const savedQuery = localStorage.getItem('madify_search_query');
+    const recentSongs = localStorage.getItem("madify_recent");
+    const savedQuery = localStorage.getItem("madify_search_query");
 
     if (recentSongs) {
       const parsed = JSON.parse(recentSongs);
@@ -50,8 +52,8 @@ const Index = () => {
         setSongs(response.songs);
         setPlaylist(response.songs);
         setNextPageToken(response.nextPageToken);
-        localStorage.setItem('madify_recent', JSON.stringify(response.songs));
-        localStorage.setItem('madify_search_query', query);
+        localStorage.setItem("madify_recent", JSON.stringify(response.songs));
+        localStorage.setItem("madify_search_query", query);
       } else {
         toast({
           title: "No results found",
@@ -77,13 +79,16 @@ const Index = () => {
 
     setIsLoadingMore(true);
     try {
-      const response: SearchResponse = await searchYouTube(currentQuery, nextPageToken);
+      const response: SearchResponse = await searchYouTube(
+        currentQuery,
+        nextPageToken
+      );
       if (response.songs.length > 0) {
-        setSongs(prev => [...prev, ...response.songs]);
-        setPlaylist(prev => [...prev, ...response.songs]);
+        setSongs((prev) => [...prev, ...response.songs]);
+        setPlaylist((prev) => [...prev, ...response.songs]);
         setNextPageToken(response.nextPageToken);
         const combinedSongs = [...songs, ...response.songs];
-        localStorage.setItem('madify_recent', JSON.stringify(combinedSongs));
+        localStorage.setItem("madify_recent", JSON.stringify(combinedSongs));
       }
     } catch {
       toast({
@@ -104,7 +109,7 @@ const Index = () => {
 
   const handlePlayPause = () => {
     if (!playerRef.current) return;
-    setIsPlaying(prev => !prev);
+    setIsPlaying((prev) => !prev);
   };
 
   const handleNext = () => {
@@ -117,7 +122,8 @@ const Index = () => {
 
   const handlePrevious = () => {
     if (playlist.length === 0) return;
-    const prevIndex = currentIndex === 0 ? playlist.length - 1 : currentIndex - 1;
+    const prevIndex =
+      currentIndex === 0 ? playlist.length - 1 : currentIndex - 1;
     setCurrentIndex(prevIndex);
     setCurrentSong(playlist[prevIndex]);
     setIsPlaying(true);
@@ -147,7 +153,9 @@ const Index = () => {
                 Madify
               </span>
             </h1>
-            <p className="text-xs text-muted-foreground -mt-1 font-medium">Music Player</p>
+            <p className="text-xs text-muted-foreground -mt-1 font-medium">
+              Music Player
+            </p>
           </div>
 
           <div className="flex-1 max-w-2xl">
@@ -189,7 +197,7 @@ const Index = () => {
                       Loading...
                     </>
                   ) : (
-                    'Load More Songs'
+                    "Load More Songs"
                   )}
                 </Button>
               </div>
@@ -198,14 +206,21 @@ const Index = () => {
         ) : (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <Music4Icon className="h-24 w-24 text-muted-foreground/20 mb-6" />
-            <h2 className="text-2xl font-semibold text-foreground mb-2">Start Your Vibe</h2>
-            <p className="text-muted-foreground">Search for your favorite songs or artists to begin your musical journey</p>
+            <h2 className="text-2xl font-semibold text-foreground mb-2">
+              Start Your Vibe
+            </h2>
+            <p className="text-muted-foreground">
+              Search for your favorite songs or artists to begin your musical
+              journey
+            </p>
           </div>
         )}
       </main>
 
       <PlayerBar
         currentSong={currentSong}
+        isLooping={isLooping}
+        onToggleLoop={handleToggleLoop}
         isPlaying={isPlaying}
         onPlayPause={handlePlayPause}
         onNext={handleNext}

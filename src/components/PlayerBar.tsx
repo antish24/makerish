@@ -1,13 +1,15 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { Play, Pause, SkipBack, SkipForward, Loader2 } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, Loader2, Repeat } from 'lucide-react';
 import { Button } from './ui/button';
 import { Song } from '@/lib/youtube';
 
 interface PlayerBarProps {
   currentSong: Song | null;
   isPlaying: boolean;
+  isLooping: boolean;
+  onToggleLoop: () => void;
   onPlayPause: () => void;
   onNext: () => void;
   onPrevious: () => void;
@@ -26,6 +28,8 @@ declare global {
 export function PlayerBar({
   currentSong,
   isPlaying,
+  isLooping,
+  onToggleLoop,
   onPlayPause,
   onNext,
   onPrevious,
@@ -35,6 +39,7 @@ export function PlayerBar({
 }: PlayerBarProps) {
   const playerRef = useRef<any>(null);
   const onNextRef = useRef(onNext);
+  const isLoopingRef = useRef(isLooping);
   const [isAPIReady, setIsAPIReady] = useState(false);
   const [isPlayerReady, setIsPlayerReady] = useState(false);
   const [isPlayerLoading, setIsPlayerLoading] = useState(false);
@@ -42,9 +47,14 @@ export function PlayerBar({
   const [duration, setDuration] = useState(0);
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
+  // keep refs synced with latest props
   useEffect(() => {
     onNextRef.current = onNext;
   }, [onNext]);
+
+  useEffect(() => {
+    isLoopingRef.current = isLooping;
+  }, [isLooping]);
 
   const formatTime = useCallback((seconds: number): string => {
     if (isNaN(seconds)) return '0:00';
@@ -53,7 +63,7 @@ export function PlayerBar({
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   }, []);
 
-  // Load YouTube IFrame API once
+  // Load YouTube IFrame API
   useEffect(() => {
     if (!window.YT) {
       const tag = document.createElement('script');
@@ -68,7 +78,7 @@ export function PlayerBar({
     }
   }, []);
 
-  // Initialize YouTube player only once
+  // Initialize YouTube Player
   useEffect(() => {
     if (isAPIReady && !playerRef.current) {
       playerRef.current = new window.YT.Player('youtube-player', {
@@ -98,7 +108,16 @@ export function PlayerBar({
                 break;
               case window.YT.PlayerState.ENDED:
                 stopProgressTracking();
-                setTimeout(() => onNextRef.current(), 500);
+                if (isLoopingRef.current) {
+                  // Replay current song
+                  setTimeout(() => {
+                    playerRef.current?.seekTo(0);
+                    playerRef.current?.playVideo();
+                  }, 300);
+                } else {
+                  // Go to next song
+                  setTimeout(() => onNextRef.current(), 500);
+                }
                 break;
             }
           },
@@ -121,7 +140,7 @@ export function PlayerBar({
     }
   }, [currentSong?.id, isPlayerReady]);
 
-  // Sync play/pause with state
+  // Sync play/pause with global state
   useEffect(() => {
     if (!isPlayerReady || !playerRef.current) return;
     try {
@@ -169,6 +188,7 @@ export function PlayerBar({
     }
   };
 
+  // Cleanup
   useEffect(() => {
     return () => {
       stopProgressTracking();
@@ -188,6 +208,7 @@ export function PlayerBar({
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-[hsl(var(--player-bg))] border-t border-border backdrop-blur-lg z-50 animate-slide-up">
+      {/* progress bar */}
       <div
         className="w-full h-1.5 bg-muted/50 cursor-pointer group"
         onClick={handleProgressClick}
@@ -200,6 +221,7 @@ export function PlayerBar({
 
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between gap-4">
+          {/* Song info */}
           <div className="flex items-center gap-3 flex-1 min-w-0">
             <img
               src={currentSong.thumbnail}
@@ -221,16 +243,15 @@ export function PlayerBar({
             </div>
           </div>
 
+          {/* Controls */}
           <div className="flex items-center gap-2 flex-shrink-0">
-            <Button
-              variant="ghost"
-              size="icon"
+            <button
               onClick={onPrevious}
-              className="text-foreground hover:text-primary"
+              className="text-foreground p-2"
               disabled={playlist.length <= 1 || isPlayerLoading}
             >
-              <SkipBack className="h-5 w-5" />
-            </Button>
+              <SkipBack className="h-4 w-4" />
+            </button>
 
             <Button
               variant="default"
@@ -248,15 +269,22 @@ export function PlayerBar({
               )}
             </Button>
 
-            <Button
-              variant="ghost"
-              size="icon"
+            <button
               onClick={onNext}
-              className="text-foreground hover:text-primary"
+              className="text-foreground p-2"
               disabled={playlist.length <= 1 || isPlayerLoading}
             >
-              <SkipForward className="h-5 w-5" />
-            </Button>
+              <SkipForward className="h-4 w-4" />
+            </button>
+
+            {/* 🔁 Loop Toggle */}
+            <button
+              onClick={onToggleLoop}
+              className={`text-foreground p-2 ${isLooping ? 'text-primary' : ''}`}
+              title={isLooping ? 'Looping current song' : 'Enable loop'}
+            >
+              <Repeat className="h-4 w-4" />
+            </button>
           </div>
 
           <div className="flex-1 hidden lg:block" />
