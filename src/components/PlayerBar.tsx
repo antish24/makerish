@@ -247,7 +247,7 @@ export function PlayerBar({
           <div className="flex items-center gap-2 flex-shrink-0">
             <button
               onClick={onPrevious}
-              className="text-foreground p-2"
+              className="text-foreground p-2 hover:text-primary"
               disabled={playlist.length <= 1 || isPlayerLoading}
             >
               <SkipBack className="h-4 w-4" />
@@ -271,7 +271,7 @@ export function PlayerBar({
 
             <button
               onClick={onNext}
-              className="text-foreground p-2"
+              className="text-foreground p-2 hover:text-primary"
               disabled={playlist.length <= 1 || isPlayerLoading}
             >
               <SkipForward className="h-4 w-4" />
