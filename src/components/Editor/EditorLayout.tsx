@@ -4,8 +4,18 @@ import { Template, BrochureContent, Block, LayoutStyle, PanelBackground, BorderS
 import { BrochurePreview } from '../Brochure/BrochurePreview';
 import { Sidebar } from './Sidebar';
 import { Button } from '../ui/button';
-import { ArrowLeft, Settings2 } from 'lucide-react';
+import { ArrowLeft, Settings2, RotateCcw } from 'lucide-react';
 import { cn } from '../../lib/utils';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "../ui/alert-dialog";
 
 interface EditorLayoutProps {
     template: Template;
@@ -54,7 +64,13 @@ export function EditorLayout({
 }: EditorLayoutProps) {
     const [activeSide, setActiveSide] = useState<'front' | 'back'>('front');
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
     const navigate = useNavigate();
+
+    const handleReset = () => {
+        onReset();
+        setIsResetDialogOpen(false);
+    };
 
     return (
         <div className="flex flex-col h-screen bg-gray-50/50 overflow-hidden">
@@ -74,10 +90,10 @@ export function EditorLayout({
                     <Button
                         variant="ghost"
                         size="sm"
-                        onClick={onReset}
-                        className="text-gray-500 hover:text-gray-900 font-bold"
+                        onClick={() => setIsResetDialogOpen(true)}
+                        className="text-gray-500 hover:text-red-600 font-bold transition-colors"
                     >
-                        <Settings2 className="w-4 h-4 mr-2" />
+                        <RotateCcw className="w-4 h-4 mr-2" />
                         Reset
                     </Button>
                 </div>
@@ -202,10 +218,31 @@ export function EditorLayout({
                             if (window.innerWidth < 768) setIsSidebarOpen(false);
                         }}
                         onExport={onExport}
-                        onReset={onReset}
+                        onReset={() => setIsResetDialogOpen(true)}
                     />
                 </div>
             </div>
+
+            {/* Confirmation Dialog */}
+            <AlertDialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Reset all changes?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This will discard all your customizations and restore the template to its original state. This action cannot be undone.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={handleReset}
+                            className="bg-red-600 hover:bg-red-700 text-white"
+                        >
+                            Reset Everything
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 }
