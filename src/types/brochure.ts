@@ -1,6 +1,7 @@
 export type BlockType = 'heading' | 'subheading' | 'body' | 'image' | 'qr' | 'logo' | 'icon';
 export type LayoutStyle = 'flat';
 export type PatternStyle = 'none' | 'dots' | 'grid' | 'lines' | 'waves' | 'custom';
+export type TemplateCategory = 'brochure' | 'certificate' | 'cv' | 'brothers';
 
 export interface PanelBackground {
     type: 'color' | 'pattern' | 'image' | 'gradient';
@@ -55,7 +56,7 @@ export interface BrochureContent {
     front: {
         panels: Panel[];
     };
-    back: {
+    back?: {
         panels: Panel[];
     };
 }
@@ -63,8 +64,9 @@ export interface BrochureContent {
 export interface Template {
     id: string;
     name: string;
-    category: string;
+    category: TemplateCategory;
     themeColor: string;
     layout: LayoutStyle;
     content: BrochureContent;
+    previewImage?: string;
 }

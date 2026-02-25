@@ -332,14 +332,14 @@ function renderBlock(block: Block, themeColor: string, layout: LayoutStyle) {
 
         case 'icon':
             return (
-                <div className={cn("flex py-2", isCentered ? "justify-center" : "justify-start")} style={{ textAlign: textStyle.textAlign }}>
+                <div className={cn("flex py-2 w-full", isCentered ? "justify-center" : "justify-start")} style={{ textAlign: textStyle.textAlign }}>
                     {IconComponent(block.icon, block.fontSize)}
                 </div>
             );
 
         case 'logo':
             return (
-                <div className="flex mb-3 md:mb-4 justify-center">
+                <div className={cn("flex mb-3 md:mb-4 w-full", isCentered ? "justify-center" : "justify-start")}>
                     {block.src ? (
                         <img src={block.src} alt={block.alt} className="max-h-20 md:max-h-28 w-auto object-contain" />
                     ) : (

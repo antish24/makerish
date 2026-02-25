@@ -55,7 +55,9 @@ export function BrochurePreview({
         <div
             id={id}
             className={cn(
-                "bg-white print:m-0 print:p-0 relative overflow-hidden grid grid-cols-3",
+                "bg-white print:m-0 print:p-0 relative overflow-hidden grid",
+                content[side].panels.length === 1 ? "grid-cols-1" :
+                    content[side].panels.length === 2 ? "grid-cols-2" : "grid-cols-3",
                 isExporting ? "w-[297mm] h-[210mm]" : "w-[1122px] h-[794px] rounded-sm"
             )}
         >
@@ -81,7 +83,7 @@ export function BrochurePreview({
         return (
             <div className="space-y-0 print:space-y-0 flex flex-col gap-0">
                 {renderSide('front', 'brochure-front')}
-                {renderSide('back', 'brochure-back')}
+                {content.back && renderSide('back', 'brochure-back')}
             </div>
         );
     }

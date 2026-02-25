@@ -1,14 +1,17 @@
 "use client";
 
 import { useBrochureEditor } from "../hooks/useBrochureEditor";
-
 import { EditorLayout } from "../components/Editor/EditorLayout";
 import { exportToPDF, exportToPNG } from "../utils/exportUtils";
 import { Toaster } from "sonner";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { BrochurePreview } from "../components/Brochure/BrochurePreview";
 
 const Index = () => {
+  const [searchParams] = useSearchParams();
+  const templateId = searchParams.get('template');
+
   const {
     activeTemplate,
     content,
@@ -16,7 +19,7 @@ const Index = () => {
     editingPanel,
     setEditingBlock,
     setEditingPanel,
-    selectTemplate,
+    selectTemplateById,
     updateBlock,
     updateThemeColor,
     updateLayout,
@@ -33,6 +36,12 @@ const Index = () => {
   } = useBrochureEditor();
 
   const [isExporting, setIsExporting] = useState(false);
+
+  useEffect(() => {
+    if (templateId) {
+      selectTemplateById(templateId);
+    }
+  }, [templateId, selectTemplateById]);
 
   return (
     <div className="min-h-screen bg-white text-gray-900 selection:bg-blue-100 selection:text-blue-700">
@@ -69,7 +78,8 @@ const Index = () => {
             setTimeout(async () => {
               try {
                 if (format === 'pdf') {
-                  await exportToPDF(activeTemplate.name, 'brochure-front', 'brochure-back');
+                  const hasBack = !!content.back;
+                  await exportToPDF(activeTemplate.name, 'brochure-front', hasBack ? 'brochure-back' : undefined as any);
                 } else {
                   await exportToPNG(activeTemplate.name, 'brochure-front', 'brochure-back');
                 }

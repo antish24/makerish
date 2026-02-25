@@ -1,9 +1,10 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Template, BrochureContent, Block, LayoutStyle, PanelBackground, BorderStyle, BlockType } from '../../types/brochure';
 import { BrochurePreview } from '../Brochure/BrochurePreview';
 import { Sidebar } from './Sidebar';
 import { Button } from '../ui/button';
-import { Settings2 } from 'lucide-react';
+import { ArrowLeft, Settings2 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 interface EditorLayoutProps {
@@ -53,20 +54,33 @@ export function EditorLayout({
 }: EditorLayoutProps) {
     const [activeSide, setActiveSide] = useState<'front' | 'back'>('front');
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const navigate = useNavigate();
 
     return (
         <div className="flex flex-col h-screen bg-gray-50/50 overflow-hidden">
             {/* Header / Top Bar */}
             <div className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6 z-30 shadow-sm shrink-0">
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={onReset}
-                    className="text-gray-500 hover:text-gray-900 font-bold"
-                >
-                    <Settings2 className="w-4 h-4 mr-2" />
-                    Reset Brochure
-                </Button>
+                <div className="flex items-center gap-2">
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => navigate('/')}
+                        className="text-gray-500 hover:text-gray-900 font-bold"
+                    >
+                        <ArrowLeft className="w-4 h-4 mr-2" />
+                        Gallery
+                    </Button>
+                    <div className="w-[1px] h-6 bg-gray-100 mx-1" />
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={onReset}
+                        className="text-gray-500 hover:text-gray-900 font-bold"
+                    >
+                        <Settings2 className="w-4 h-4 mr-2" />
+                        Reset
+                    </Button>
+                </div>
                 <div className="flex bg-gray-100/80 p-1.5 rounded-xl shadow-inner select-none">
                     <button
                         onClick={() => setActiveSide('front')}
@@ -80,18 +94,20 @@ export function EditorLayout({
                     >
                         Front
                     </button>
-                    <button
-                        onClick={() => setActiveSide('back')}
-                        className={cn(
-                            "px-4 md:px-6 py-2 rounded-lg text-xs font-black transition-all uppercase tracking-tighter",
-                            activeSide === 'back'
-                                ? "bg-white shadow-sm ring-1 ring-black/5"
-                                : "text-gray-400 hover:text-gray-600"
-                        )}
-                        style={activeSide === 'back' ? { color: content.themeColor } : {}}
-                    >
-                        Back
-                    </button>
+                    {content.back && (
+                        <button
+                            onClick={() => setActiveSide('back')}
+                            className={cn(
+                                "px-4 md:px-6 py-2 rounded-lg text-xs font-black transition-all uppercase tracking-tighter",
+                                activeSide === 'back'
+                                    ? "bg-white shadow-sm ring-1 ring-black/5"
+                                    : "text-gray-400 hover:text-gray-600"
+                            )}
+                            style={activeSide === 'back' ? { color: content.themeColor } : {}}
+                        >
+                            Back
+                        </button>
+                    )}
                 </div>
 
                 <div className="flex items-center gap-2 md:gap-3">

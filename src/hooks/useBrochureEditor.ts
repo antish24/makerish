@@ -22,11 +22,18 @@ export function useBrochureEditor() {
         setEditingPanel(null);
     }, []);
 
+    const selectTemplateById = useCallback((id: string) => {
+        const template = templates.find(t => t.id === id) || templates[0];
+        selectTemplate(template);
+    }, [selectTemplate]);
+
     const updateBlock = useCallback((side: 'front' | 'back', panelIndex: number, blockId: string, updates: Partial<Block>) => {
         setContent(prev => {
             if (!prev) return null;
             const newContent = { ...prev };
             const sideData = newContent[side];
+            if (!sideData) return prev;
+
             const panel = sideData.panels[panelIndex];
             const blockIndex = panel.blocks.findIndex(b => b.id === blockId);
 
@@ -58,10 +65,10 @@ export function useBrochureEditor() {
     }, [updateBlock]);
 
     // Find the actual block being edited for the sidebar
-    const activeEditingBlock = editingBlock && content
+    const activeEditingBlock = editingBlock && content && content[editingBlock.side]
         ? {
             ...editingBlock,
-            block: content[editingBlock.side].panels[editingBlock.panelIndex].blocks.find(b => b.id === editingBlock.blockId) as Block
+            block: content[editingBlock.side]!.panels[editingBlock.panelIndex].blocks.find(b => b.id === editingBlock.blockId) as Block
         }
         : null;
 
@@ -88,7 +95,9 @@ export function useBrochureEditor() {
         setContent(prev => {
             if (!prev) return null;
             const newContent = { ...prev };
-            const sideData = { ...newContent[side] };
+            const sideData = newContent[side];
+            if (!sideData) return prev;
+
             const panels = [...sideData.panels];
             const panel = panels[panelIndex];
 
@@ -99,8 +108,7 @@ export function useBrochureEditor() {
                 panels[panelIndex] = { ...panel, background: { ...current, ...updates } };
             }
 
-            sideData.panels = panels;
-            newContent[side] = sideData;
+            newContent[side] = { ...sideData, panels };
             return newContent;
         });
     }, []);
@@ -109,7 +117,9 @@ export function useBrochureEditor() {
         setContent(prev => {
             if (!prev) return null;
             const newContent = { ...prev };
-            const sideData = { ...newContent[side] };
+            const sideData = newContent[side];
+            if (!sideData) return prev;
+
             const panels = [...sideData.panels];
             const panel = panels[panelIndex];
 
@@ -122,8 +132,7 @@ export function useBrochureEditor() {
                 panels[panelIndex] = { ...panel, [borderKey]: { ...current, ...updates } };
             }
 
-            sideData.panels = panels;
-            newContent[side] = sideData;
+            newContent[side] = { ...sideData, panels };
             return newContent;
         });
     }, []);
@@ -131,17 +140,22 @@ export function useBrochureEditor() {
     const applyPanelBackgroundToAll = useCallback((side: 'front' | 'back', panelIndex: number) => {
         setContent(prev => {
             if (!prev) return null;
-            const sourcePanel = prev[side].panels[panelIndex];
+            const currentSideData = prev[side];
+            if (!currentSideData) return prev;
+
+            const sourcePanel = currentSideData.panels[panelIndex];
             const background = sourcePanel.background;
             if (!background) return prev;
 
             const newContent = { ...prev };
-            ['front', 'back'].forEach((s) => {
-                const sideName = s as 'front' | 'back';
-                newContent[sideName] = {
-                    ...newContent[sideName],
-                    panels: newContent[sideName].panels.map(p => ({ ...p, background: { ...background } }))
-                };
+            (['front', 'back'] as const).forEach((s) => {
+                const sideData = newContent[s];
+                if (sideData) {
+                    newContent[s] = {
+                        ...sideData,
+                        panels: sideData.panels.map(p => ({ ...p, background: { ...background } }))
+                    };
+                }
             });
             return newContent;
         });
@@ -151,11 +165,12 @@ export function useBrochureEditor() {
         setContent(prev => {
             if (!prev) return null;
             const newContent = { ...prev };
-            const sideData = { ...newContent[side] };
+            const sideData = newContent[side];
+            if (!sideData) return prev;
+
             const panels = [...sideData.panels];
             panels[panelIndex] = { ...panels[panelIndex], verticalAlign };
-            sideData.panels = panels;
-            newContent[side] = sideData;
+            newContent[side] = { ...sideData, panels };
             return newContent;
         });
     }, []);
@@ -164,7 +179,9 @@ export function useBrochureEditor() {
         setContent(prev => {
             if (!prev) return null;
             const newContent = { ...prev };
-            const sideData = { ...newContent[side] };
+            const sideData = newContent[side];
+            if (!sideData) return prev;
+
             const panels = [...sideData.panels];
             const panel = { ...panels[panelIndex] };
             const blocks = [...panel.blocks];
@@ -189,8 +206,7 @@ export function useBrochureEditor() {
             blocks.push(newBlock);
             panel.blocks = blocks;
             panels[panelIndex] = panel;
-            sideData.panels = panels;
-            newContent[side] = sideData;
+            newContent[side] = { ...sideData, panels };
             return newContent;
         });
     }, []);
@@ -199,13 +215,14 @@ export function useBrochureEditor() {
         setContent(prev => {
             if (!prev) return null;
             const newContent = { ...prev };
-            const sideData = { ...newContent[side] };
+            const sideData = newContent[side];
+            if (!sideData) return prev;
+
             const panels = [...sideData.panels];
             const panel = { ...panels[panelIndex] };
             panel.blocks = panel.blocks.filter(b => b.id !== blockId);
             panels[panelIndex] = panel;
-            sideData.panels = panels;
-            newContent[side] = sideData;
+            newContent[side] = { ...sideData, panels };
             return newContent;
         });
         setEditingBlock(null);
@@ -225,6 +242,7 @@ export function useBrochureEditor() {
             if (val) setEditingBlock(null);
         },
         selectTemplate,
+        selectTemplateById,
         updateBlock,
         updateThemeColor,
         updateLayout,
