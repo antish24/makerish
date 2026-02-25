@@ -79,9 +79,10 @@ const Index = () => {
               try {
                 if (format === 'pdf') {
                   const hasBack = !!content.back;
-                  await exportToPDF(activeTemplate.name, 'brochure-front', hasBack ? 'brochure-back' : undefined as any);
+                  await exportToPDF(activeTemplate.name, 'brochure-front', hasBack ? 'brochure-back' : undefined);
                 } else {
-                  await exportToPNG(activeTemplate.name, 'brochure-front', 'brochure-back');
+                  const hasBack = !!content.back;
+                  await exportToPNG(activeTemplate.name, 'brochure-front', hasBack ? 'brochure-back' : undefined);
                 }
               } finally {
                 setIsExporting(false);
